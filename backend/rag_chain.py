@@ -14,47 +14,47 @@ from groq import Groq
 from chroma_utils import query_chunks
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-MODEL_NAME = "llama-3.1-8b-instant"
+MODEL_NAME = "openai/gpt-oss-20b"
 
-# Below this similarity score, we don't trust the retrieved chunks enough
-# to answer from them. Tune this after testing with real questions.
-RELEVANCE_THRESHOLD = 0.3
+RELEVANCE_THRESHOLD = 0.25
 
-SYSTEM_PROMPT = """You are a helpful college enquiry assistant for Vidya Jyothi Institute of Technology.
-Answer the student's question using ONLY the context provided below.
-If the context does not contain the answer, say you don't have that information
-and suggest they contact the admissions office — do not make anything up.
+SYSTEM_PROMPT = """You are a helpful, friendly college enquiry assistant for Vidya Jyothi Institute of Technology.
+You're chatting with a student, so answer naturally and conversationally.
 
-Context:
+Guidelines:
+- Never mention "point 11", "the context", "the document", section numbers, or table structure.
+- Rewrite information in your own words. Don't copy raw formatting or numbering from source material.
+- Be direct and complete.
+- If some details are missing, answer with what you know and suggest confirming with the admissions office.
+- Keep the tone warm and helpful.
+
+Here's what you know that's relevant to the student's question:
 {context}
 """
 
 
 def build_prompt(query: str):
-    """Retrieves relevant chunks and assembles the final prompt sent to the LLM."""
-    results = query_chunks(query, k=4)
+    results = query_chunks(query, k=6)
 
-    relevant = [(doc, score) for doc, score in results if score >= RELEVANCE_THRESHOLD]
-
-    if not relevant:
+    if not results:
         return None, []
 
-    context_text = "\n\n---\n\n".join(doc.page_content for doc, _ in relevant)
-    sources = list({doc.metadata.get("source", "unknown") for doc, _ in relevant})
-
+    # Note: Sentence-Transformers' relevance scores through LangChain/Chroma
+    # come out miscalibrated (negative values) for this embedding backend —
+    # a known compatibility quirk. Rather than filter on a broken score,
+    # we trust the top-k semantic ranking directly, which is reliable even
+    # though the raw numbers aren't.
+    context_text = "\n\n---\n\n".join(doc.page_content for doc, _ in results)
+    sources = list({doc.metadata.get("source", "unknown") for doc, _ in results})
     system_message = SYSTEM_PROMPT.format(context=context_text)
     return system_message, sources
 
 
 def stream_answer(query: str):
-    """
-    Generator that yields response tokens as they arrive from the LLM.
-    If no relevant context was found, yields a fallback message instead.
-    """
     system_message, sources = build_prompt(query)
 
     if system_message is None:
-        yield "I don't have information on that in my current documents. Please check with the admissions office."
+        yield "I don't have that information right now — you might want to check with the admissions office directly."
         return
 
     stream = client.chat.completions.create(

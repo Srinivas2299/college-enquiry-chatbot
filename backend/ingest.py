@@ -1,11 +1,8 @@
 """
 ingest.py
 ---------
-Standalone script to bulk-load every PDF in ./data into ChromaDB.
+Bulk-loads every PDF and TXT file in ./data into ChromaDB.
 Run this whenever you add new documents.
-
-Usage:
-    python ingest.py
 """
 
 import os
@@ -13,25 +10,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from chroma_utils import add_pdf
+from chroma_utils import add_document
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 if __name__ == "__main__":
-    pdf_files = [f for f in os.listdir(DATA_DIR) if f.lower().endswith(".pdf")]
+    files = [f for f in os.listdir(DATA_DIR) if f.lower().endswith((".pdf", ".txt"))]
 
-    if not pdf_files:
-        print(f"No PDFs found in {DATA_DIR}. Add some real college documents and re-run.")
+    if not files:
+        print(f"No PDF or TXT files found in {DATA_DIR}.")
         exit()
 
-    succeeded = []
-    skipped = []
-    failed = []
+    succeeded, skipped, failed = [], [], []
 
-    for filename in pdf_files:
+    for filename in files:
         path = os.path.join(DATA_DIR, filename)
         try:
-            num_chunks = add_pdf(path, source_name=filename)
+            num_chunks = add_document(path, source_name=filename)
             if num_chunks == 0:
                 print(f"SKIPPED (no extractable text): {filename}")
                 skipped.append(filename)
@@ -44,5 +39,5 @@ if __name__ == "__main__":
 
     print("\n--- Summary ---")
     print(f"Succeeded: {len(succeeded)}")
-    print(f"Skipped (no text): {len(skipped)} -> {skipped}")
-    print(f"Failed (errors): {len(failed)} -> {failed}")
+    print(f"Skipped: {len(skipped)} -> {skipped}")
+    print(f"Failed: {len(failed)} -> {failed}")

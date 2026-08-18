@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from chroma_utils import add_pdf
+from chroma_utils import add_document
 from rag_chain import stream_answer
 
 app = FastAPI(title="College Enquiry Chatbot")
@@ -49,7 +49,7 @@ async def upload_document(file: UploadFile = File(...)):
         tmp_path = tmp.name
 
     try:
-        num_chunks = add_pdf(tmp_path, source_name=file.filename)
+        num_chunks = add_document(tmp_path, source_name=file.filename)
     finally:
         os.remove(tmp_path)
 
