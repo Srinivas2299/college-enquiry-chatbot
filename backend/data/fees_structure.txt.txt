@@ -1,8 +1,13 @@
 VJIT Fee Structure (2024-2025):
-1. B.Tech Tuition Fee: ₹1,15,000 per year.
-2. M.Tech Tuition Fee: ₹57,000 per year.
-3. MBA Tuition Fee: ₹51,800 per year.
-4. Admission Fee: ₹5,500 (One time).
-5. NBA Accreditation Fee: ₹3,000 per year (for accredited branches).
-6. Transport Fee: Ranges from ₹20,000 to ₹35,000 depending on distance.
-7. Exam Fee: ₹1200 per semester (Regular).
+
+This fee structure applies to all B.Tech branches, including CSE, AI & ML (AIML), ECE, EEE, IT, Mechanical, and Civil Engineering, unless otherwise specified.
+
+1. B.Tech Tuition Fee (all branches, including AI & ML / AIML): Rs.1,15,000 per year.
+2. M.Tech Tuition Fee: Rs.57,000 per year.
+3. MBA Tuition Fee: Rs.51,800 per year.
+4. Admission Fee: Rs.5,500 (One time).
+5. NBA Accreditation Fee: Rs.3,000 per year (for accredited branches).
+6. Transport Fee: Ranges from Rs.20,000 to Rs.35,000 depending on distance.
+7. Exam Fee: Rs.1200 per semester (Regular).
+
+Note: These are standard B.Tech tuition fees and apply equally to the AI & ML (AIML) branch as they do to all other engineering branches at VJIT.
